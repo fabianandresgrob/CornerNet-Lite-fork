@@ -43,8 +43,7 @@ class NetworkFactory(object):
 
         if distributed:
             from apex.parallel import DistributedDataParallel, convert_syncbn_model
-            torch.cuda.set_device(gpu)
-            self.network = self.network.cuda(gpu)
+            self.network = self.network
             self.network = convert_syncbn_model(self.network)
             self.network = DistributedDataParallel(self.network)
         else:
@@ -72,7 +71,8 @@ class NetworkFactory(object):
             raise ValueError("unknown optimizer")
 
     def cuda(self):
-        self.model.cuda()
+        if torch.cuda.is_available():
+            self.model.cuda()
 
     def train_mode(self):
         self.network.train()
@@ -82,8 +82,8 @@ class NetworkFactory(object):
 
     def _t_cuda(self, xs):
         if type(xs) is list:
-            return [x.cuda(self.gpu, non_blocking=True) for x in xs]
-        return xs.cuda(self.gpu, non_blocking=True)
+            return [x for x in xs]
+        return xs
 
     def train(self, xs, ys, **kwargs):
         xs = [self._t_cuda(x) for x in xs]
@@ -119,14 +119,14 @@ class NetworkFactory(object):
     def load_pretrained_params(self, pretrained_model):
         print("loading from {}".format(pretrained_model))
         with open(pretrained_model, "rb") as f:
-            params = torch.load(f)
+            params = torch.load(f, map_location=torch.device('cpu'))
             self.model.load_state_dict(params)
 
     def load_params(self, iteration):
         cache_file = self.system_config.snapshot_file.format(iteration)
         print("loading model from {}".format(cache_file))
         with open(cache_file, "rb") as f:
-            params = torch.load(f)
+            params = torch.load(f, map_location=torch.device('cpu'))
             self.model.load_state_dict(params)
 
     def save_params(self, iteration):

@@ -224,7 +224,7 @@ def prepare_images(db, image, locs, flipped=True):
     input_size  = db.configs["input_size"]
     num_patches = locs.shape[0]
 
-    images  = torch.cuda.FloatTensor(num_patches, 3, input_size[0], input_size[1]).fill_(0)
+    images  = torch.FloatTensor(num_patches, 3, input_size[0], input_size[1]).fill_(0)
     offsets = np.zeros((num_patches, 2), dtype=np.float32)
     for ind, (y, x, scale) in enumerate(locs[:, :3]):
         crop_height  = int(input_size[0] / scale)
@@ -307,15 +307,15 @@ def cornernet_saccade_inference(db, nnet, image, decode_func=batch_decode):
 
     num_iterations = len(att_thresholds)
 
-    im_mean = torch.cuda.FloatTensor(db.mean).reshape(1, 3, 1, 1)
-    im_std  = torch.cuda.FloatTensor(db.std).reshape(1, 3, 1, 1)
+    im_mean = torch.FloatTensor(db.mean).reshape(1, 3, 1, 1)
+    im_std  = torch.FloatTensor(db.std).reshape(1, 3, 1, 1)
 
     detections    = []
     height, width = image.shape[0:2]
 
     image = image / 255.
     image = image.transpose((2, 0, 1)).copy()
-    image = torch.from_numpy(image).cuda(non_blocking=True)
+    image = torch.from_numpy(image)
 
     dets, locations, atts = get_locs(
         db, nnet, image, im_mean, im_std, 

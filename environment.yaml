@@ -1,0 +1,4 @@
+name: CornerNetLite
+channels:
+  - conda-forge
+prefix: /Users/fabiangrob/miniforge3/envs/CornerNetLite

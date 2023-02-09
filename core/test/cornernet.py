@@ -99,8 +99,8 @@ def cornernet_inference(db, nnet, image, decode_func=decode):
     height_scale  = (input_size[0] + 1) // output_size[0]
     width_scale   = (input_size[1] + 1) // output_size[1]
 
-    im_mean = torch.cuda.FloatTensor(db.mean).reshape(1, 3, 1, 1)
-    im_std  = torch.cuda.FloatTensor(db.std).reshape(1, 3, 1, 1)
+    im_mean = torch.FloatTensor(db.mean).reshape(1, 3, 1, 1)
+    im_std  = torch.FloatTensor(db.std).reshape(1, 3, 1, 1)
 
     detections = []
     for scale in scales:
@@ -132,7 +132,7 @@ def cornernet_inference(db, nnet, image, decode_func=decode):
 
         if test_flipped:
             images  = np.concatenate((images, images[:, :, :, ::-1]), axis=0)
-        images  = torch.from_numpy(images).cuda()
+        images  = torch.from_numpy(images)
         images -= im_mean
         images /= im_std
 

@@ -13,7 +13,7 @@ class Base(object):
         if model is not None:
             self._nnet.load_pretrained_params(model)
 
-        self._nnet.cuda()
+        # self._nnet.cuda()
         self._nnet.eval_mode()
 
     def _inference(self, image, *args, **kwargs):
