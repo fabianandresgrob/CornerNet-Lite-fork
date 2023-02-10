@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from .py_utils import TopPool, BottomPool, LeftPool, RightPool
+from .py_utils import TopPoolTorch, BottomPoolTorch, LeftPoolTorch, RightPoolTorch
 
 from .py_utils.utils import convolution, residual, corner_pool
 from .py_utils.losses import CornerNet_Loss
@@ -48,8 +48,8 @@ class model(hg_net):
 
         hgs = hg(pre, hg_mods, cnvs, inters, cnvs_, inters_) 
 
-        tl_modules = nn.ModuleList([corner_pool(256, TopPool, LeftPool) for _ in range(stacks)])
-        br_modules = nn.ModuleList([corner_pool(256, BottomPool, RightPool) for _ in range(stacks)])
+        tl_modules = nn.ModuleList([corner_pool(256, TopPoolTorch, LeftPoolTorch) for _ in range(stacks)])
+        br_modules = nn.ModuleList([corner_pool(256, BottomPoolTorch, RightPoolTorch) for _ in range(stacks)])
 
         tl_heats = nn.ModuleList([self._pred_mod(80) for _ in range(stacks)])
         br_heats = nn.ModuleList([self._pred_mod(80) for _ in range(stacks)])
